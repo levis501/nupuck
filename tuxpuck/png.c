@@ -20,6 +20,14 @@ static void png_read_data(png_structp ctx, png_bytep area, png_size_t size)
   SDL_RWread(src, area, size, 1);
 }
 
+void error_fn(png_structp arg1, png_const_charp arg2) {
+  SDL_SetError("Error reading the PNG file.");
+}
+
+void warn_fn(png_structp arg1, png_const_charp arg2) {
+  SDL_SetError("Warning reading the PNG file.");
+}
+
 SDL_Surface *loadPNG(Uint8 * data, Uint32 * memcounter)
 {
   SDL_Surface *volatile surface;
@@ -57,7 +65,7 @@ SDL_Surface *loadPNG(Uint8 * data, Uint32 * memcounter)
   }
 
   /* Create the PNG loading context structure */
-  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, error_fn, warn_fn);
   if (png_ptr == NULL) {
     SDL_SetError("Couldn't allocate memory for PNG file");
     goto done;
@@ -74,10 +82,12 @@ SDL_Surface *loadPNG(Uint8 * data, Uint32 * memcounter)
    * the normal method of doing things with libpng).  REQUIRED unless you
    * set up your own error handlers in png_create_read_struct() earlier.
    */
+   /*
   if (setjmp(png_ptr->jmpbuf)) {
     SDL_SetError("Error reading the PNG file.");
     goto done;
   }
+  */
 
   /* Set up the input control */
   png_set_read_fn(png_ptr, src, png_read_data);
@@ -142,9 +152,11 @@ SDL_Surface *loadPNG(Uint8 * data, Uint32 * memcounter)
       Rmask = 0x000000FF;
       Gmask = 0x0000FF00;
       Bmask = 0x00FF0000;
-      Amask = (info_ptr->channels == 4) ? 0xFF000000 : 0;
+      /*Amask = (info_ptr->channels == 4) ? 0xFF000000 : 0;*/
+      Amask = (png_get_channels(png_ptr, info_ptr)== 4) ? 0xFF000000 : 0;
     } else {
-      int s = (info_ptr->channels == 4) ? 0 : 8;
+      /*int s = (info_ptr->channels == 4) ? 0 : 8;*/
+      int s = (png_get_channels(png_ptr, info_ptr) == 4) ? 0 : 8;
       Rmask = 0xFF000000 >> s;
       Gmask = 0x00FF0000 >> s;
       Bmask = 0x0000FF00 >> s;
@@ -152,7 +164,7 @@ SDL_Surface *loadPNG(Uint8 * data, Uint32 * memcounter)
     }
   }
   surface = SDL_AllocSurface(SDL_SWSURFACE, width, height,
-			     bit_depth * info_ptr->channels, Rmask, Gmask,
+			     bit_depth * png_get_channels(png_ptr, info_ptr), Rmask, Gmask,
 			     Bmask, Amask);
   if (surface == NULL) {
     SDL_SetError("Out of memory");
@@ -170,7 +182,7 @@ SDL_Surface *loadPNG(Uint8 * data, Uint32 * memcounter)
 
   /* Create the array of pointers to image data */
   row_pointers = (png_bytep *) malloc(sizeof(png_bytep) * height);
-  if ((row_pointers == NULL)) {
+  if (row_pointers == NULL) {
     SDL_SetError("Out of memory");
     SDL_FreeSurface(surface);
     surface = NULL;
@@ -190,6 +202,10 @@ SDL_Surface *loadPNG(Uint8 * data, Uint32 * memcounter)
   /* Load the palette, if any */
   palette = surface->format->palette;
   if (palette) {
+    png_colorp palette_from_PLTE;
+    int num_palette;
+    png_get_PLTE(png_ptr, info_ptr, &palette_from_PLTE, &num_palette);
+
     if (color_type == PNG_COLOR_TYPE_GRAY) {
       palette->ncolors = 256;
       for (i = 0; i < 256; i++) {
@@ -197,12 +213,12 @@ SDL_Surface *loadPNG(Uint8 * data, Uint32 * memcounter)
 	palette->colors[i].g = i;
 	palette->colors[i].b = i;
       }
-    } else if (info_ptr->num_palette > 0) {
-      palette->ncolors = info_ptr->num_palette;
-      for (i = 0; i < info_ptr->num_palette; ++i) {
-	palette->colors[i].b = info_ptr->palette[i].blue;
-	palette->colors[i].g = info_ptr->palette[i].green;
-	palette->colors[i].r = info_ptr->palette[i].red;
+    } else if (num_palette > 0) {
+      palette->ncolors = num_palette;
+      for (i = 0; i < num_palette; ++i) {
+	palette->colors[i].b = palette_from_PLTE[i].blue;
+	palette->colors[i].g = palette_from_PLTE[i].green;
+	palette->colors[i].r = palette_from_PLTE[i].red;
       }
     }
   }

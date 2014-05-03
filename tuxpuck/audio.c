@@ -1,5 +1,9 @@
 /* audio.c - Copyright (C) 2001-2002 Jacob Kroon, see COPYING for details */
 
+#ifdef NO_AUDIO
+
+#else /* NO_AUDIO */
+
 #include <stdlib.h>
 #include <string.h>
 #include <SDL_audio.h>
@@ -241,3 +245,4 @@ void audio_free_sound(Sound * sound)
     free(sound);
   }
 }
+#endif /* NO_AUDIO */

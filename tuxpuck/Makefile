@@ -1,8 +1,9 @@
 # Makefile for TuxPuck , Copyright Jacob Kroon 2001-2002
 NAME		= tuxpuck
-VERSION		= 0.9.0-prealpha1
+VERSION		= 0.9.0-nupuck
 CC		= gcc
 CFLAGS		+= -D_VERSION=\"$(VERSION)\" -g -Wall -ansi
+CFLAGS    += -DNO_AUDIO
 CSOURCES	= tuxpuck.c video.c audio.c menu.c sprite.c font.c timer.c \
 		  board.c entity.c glass.c scoreboard.c player.c zoom.c png.c \
 		  jpg.c intro.c tux.c arcana.c buff.c a1d2.c smasher.c lex.c \
