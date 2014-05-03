@@ -1,6 +1,15 @@
 /* audio.c - Copyright (C) 2001-2002 Jacob Kroon, see COPYING for details */
 
 #ifdef NO_AUDIO
+#include "audio.h"
+void audio_init(void) {}
+void audio_deinit(void) {}
+Sound *audio_create_sound(Uint8 *a, Uint32 *b) { return NULL; }
+void audio_free_sound(Sound *a) {}
+void audio_play_sound(Sound *a) {}
+void audio_set_mute(Uint8 a) {}
+void audio_set_single(Sound *a, Uint8 b) {}
+
 
 #else /* NO_AUDIO */
 

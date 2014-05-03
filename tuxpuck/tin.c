@@ -28,7 +28,8 @@ extern unsigned char tin_png[];
 
 /* statics */
 static char _name[] = "Tin";
-static Uint8 _serve_state = 0, _is_ready = 1;
+/* unused? static Uint8 _serve_state = 0, _is_ready = 1;*/
+static Uint8 _is_ready = 1;
 
 /* functions */
 static void _tin_free(AIPlayer * player) {
@@ -55,6 +56,7 @@ static Uint8 _ready(void) {
 	return _is_ready;
 }
 
+/* unused?
 static void _tin_serve(AIPlayer * player, Uint32 time) {
 	static float counter, counter_speed, angle_limit;
 	static Uint8 corner = 0;
@@ -97,7 +99,7 @@ static void _tin_serve(AIPlayer * player, Uint32 time) {
 	default:
 		break;
 	}
-}
+}*/
 
 static void _tin_set_state(AIPlayer * player, Uint8 state) {
 	player->state = state;

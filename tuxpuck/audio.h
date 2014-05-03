@@ -7,7 +7,11 @@
 #include <SDL_types.h>
 
 /* structs */
+#ifdef NO_AUDIO
+typedef int Sound; /* dummy */
+#else /* NO_AUDIO */
 typedef struct _Sound Sound;
+#endif /* NO_AUDIO */
 
 /* functions */
 void audio_init(void);

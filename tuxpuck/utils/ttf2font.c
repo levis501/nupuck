@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 {
   FT_Library ftl;
   FT_Face face;
-  FT_UInt xsize, ysize;
+  FT_UInt xsize=0, ysize=0;
   unsigned char ch;
   FILE *out = NULL;
 

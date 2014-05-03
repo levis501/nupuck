@@ -25,7 +25,8 @@ extern unsigned char tux_apps_ogg[];
 
 /* statics */
 static char _name[] = "Lex";
-static Uint8 _serve_state = 0, _is_ready = 1;
+/* unused? static Uint8 _serve_state = 0, _is_ready = 1; */
+static Uint8 _is_ready = 1;
 
 /* functions */
 static void _lex_free(AIPlayer * player) {

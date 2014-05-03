@@ -2,8 +2,11 @@
 NAME		= tuxpuck
 VERSION		= 0.9.0-nupuck
 CC		= gcc
-CFLAGS		+= -D_VERSION=\"$(VERSION)\" -g -Wall -ansi
+#CFLAGS		+= -D_VERSION=\"$(VERSION)\" -g -Wall -ansi # ansi unused according to clang warning
+CFLAGS		+= -D_VERSION=\"$(VERSION)\" -g -Wall
 CFLAGS    += -DNO_AUDIO
+#AUDIO_LIBS = -lvorbisfile -lvorbis -logg
+AUDIO_LIBS = 
 CSOURCES	= tuxpuck.c video.c audio.c menu.c sprite.c font.c timer.c \
 		  board.c entity.c glass.c scoreboard.c player.c zoom.c png.c \
 		  jpg.c intro.c tux.c arcana.c buff.c a1d2.c smasher.c lex.c \
@@ -24,7 +27,7 @@ endif
 $(NAME) : $(OBJS)
 	cd data; $(MAKE)
 	$(CC) $(CFLAGS) $(OBJS) data/libdata.a `sdl-config --libs` -lm -lpng \
-	-ljpeg -lz -lvorbisfile -lvorbis -logg -o $(NAME)
+	-ljpeg -lz $(AUDIO_LIBS) -o $(NAME)
 
 w32icon.o : data/icons/tuxpuck.ico
 	echo AppIcon ICON "data/icons/tuxpuck.ico" > temp.rc

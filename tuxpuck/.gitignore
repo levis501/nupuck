@@ -1,1 +1,10 @@
 *.o
+tuxpuck
+utils/anim
+utils/anim.dSYM/
+utils/data2c
+utils/data2c.dSYM/
+utils/ttf2font
+utils/ttf2font.dSYM/
+data/*.c
+data/libdata.a
