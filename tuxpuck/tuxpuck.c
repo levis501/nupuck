@@ -9,6 +9,8 @@
 #include "audio.h"
 #include "tuxpuck.h"
 
+#include "toolbox.h"
+
 /* defines */
 #ifdef windows
 #define SETTINGSFILE "tuxpuck.ini"

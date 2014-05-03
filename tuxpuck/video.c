@@ -147,7 +147,7 @@ void video_toggle_fullscreen(void)
 {
  if( SDL_WM_ToggleFullScreen(_screen)==0){
 	 printf("Failed to toggle to fullscreen mode:");
-	 printf(SDL_GetError() );
+	 printf("SDL_GetError(): %s\n", SDL_GetError() );
 	 printf("\n");
  };
 /*  surface=SDL_SetVideoMode(surface->w,surface->h,surface->format->BitsPerPixel,SDL_HWSURFACE|(surface->flags&SDL_FULLSCREEN?0:SDL_FULLSCREEN));*/
