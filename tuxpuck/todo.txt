@@ -1,0 +1,21 @@
+Todo list (ordered in sinking priority) :
+=========================================
+
+ * Switch screen-resolutions / Switch to fullscreen
+ 
+ * Add possibility to select menu items with the mouse
+ 
+ * Add animations: 
+ 	- each time an opponent wins or lose
+ 	- when the player waits to long before playing
+ 	- when the player entered the ball himself
+ 	
+ * Add opponents
+ 
+ * Add opponents selection-screen
+ 
+ * Fix some UI-glitches
+ 
+ * Add more sophisticated AI strategies
+
+ * Add netplay
