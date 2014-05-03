@@ -409,8 +409,6 @@ int main(int argc, char *argv[]) {
 			while (next_opponent != -1)
 				next_opponent = _play_match(next_opponent);
 			break;
-		case 1:
-      break;
 		case 3:
 			loop = 0;
 			break;

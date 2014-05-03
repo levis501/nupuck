@@ -1,5 +1,7 @@
 /* scoreboard.c - Copyright (C) 2001-2002 Jacob Kroon, see COPYING for details */
 
+#include "math.h"
+
 #include "video.h"
 #include "tuxpuck.h"
 
@@ -12,14 +14,25 @@
 #define LINE_HEIGHT		((Uint32)22)
 #define MOUSEBAR_TIMEOUT	((Uint32)2000)
 #define MOUSEBAR_FADOUT_SPEED	((float)0.001)
+#define EYEBAR_LEFT SCOREBOARD_POSITION+10
+#define EYEBAR_WIDTH ((Uint16)130)
+#define EYEBAR_CENTER (EYEBAR_LEFT + (EYEBAR_WIDTH / 2))
+#define EYEBAR_TOP ((Uint16)125)
+#define EYE_ANGLE_MAX ((float) 0.5)
+#define EYEBAR_SCALE (EYEBAR_WIDTH / (EYE_ANGLE_MAX*2))
 
 /* externals */
 extern unsigned char scoreboard_png[];
 extern unsigned char mousebar_png[];
+extern float _left_eye_angle;
+extern float _right_eye_angle;
+extern float _left_eye_width;
+extern float _right_eye_width;
+
 
 /* statics */
-static SDL_Surface *_sdl_scoreboard, *_sdl_mousebar;
-static SDL_Rect _rect, _mousebar_rect;
+static SDL_Surface *_sdl_scoreboard, *_sdl_mousebar, *_sdl_eyebar;
+static SDL_Rect _rect, _mousebar_rect, _eyebar_rect;
 static Uint32 _counter = 0;
 static Uint8 _score[2], _state, _mouse_speed = 0, _p1_scored, _p2_scored;
 static float _mousebar_alpha = 0;
@@ -41,6 +54,7 @@ void scoreboard_init(void) {
 	_state = SCOREBOARD_STATE_IDLE;
 	_sdl_scoreboard = video_create_png_surface(scoreboard_png, NULL);
 	_sdl_mousebar = video_create_png_surface(mousebar_png, NULL);
+  _sdl_eyebar = video_create_png_surface(mousebar_png, NULL);
 	_rect.x = SCOREBOARD_POSITION;
 	_rect.y = 0;
 	_rect.w = 0;
@@ -52,6 +66,7 @@ void scoreboard_init(void) {
 void scoreboard_deinit(void) {
 	SDL_FreeSurface(_sdl_scoreboard);
 	SDL_FreeSurface(_sdl_mousebar);
+	SDL_FreeSurface(_sdl_eyebar);
 }
 
 /* Adds a point to the scoreboard. player can be FIRST_PLAYER
@@ -76,6 +91,7 @@ void scoreboard_erase(void) {
 void scoreboard_clean_up(void) {
 	if (_mousebar_alpha > 0)
 		video_erase(&_mousebar_rect);
+  video_erase(&_eyebar_rect);
 }
 
 void scoreboard_set_alpha(Uint8 alpha) {
@@ -104,6 +120,30 @@ void scoreboard_reblit(void) {
 		video_set_alpha(_sdl_mousebar, (Uint8) (_mousebar_alpha * 255.0));
 		video_blit(_sdl_mousebar, NULL, &_mousebar_rect);
 	}
+
+  rect.y = EYEBAR_TOP;
+  rect.h = 25;
+
+  _left_eye_angle=-0.4;
+  _left_eye_width=0.1;
+
+  rect.x = EYEBAR_CENTER - EYEBAR_SCALE * (_left_eye_angle + _left_eye_width/2);
+  rect.w =  EYEBAR_SCALE * _left_eye_width;
+  printf("left eye x: %d, w:%d\n", rect.x,rect.w);
+	video_fill(video_map_rgb(255, 0, 255), (Uint8) 255, &rect);
+
+  _right_eye_angle=0.4;
+  _right_eye_width=0.1;
+
+  rect.x = EYEBAR_CENTER - EYEBAR_SCALE * (_right_eye_angle + _right_eye_width/2);
+  rect.w = EYEBAR_SCALE * _right_eye_width;
+	video_fill(video_map_rgb(255, 255, 0), (Uint8) 255, &rect);
+
+  _eyebar_rect.x = SCOREBOARD_POSITION;
+  _eyebar_rect.y = 125;
+	video_set_alpha(_sdl_eyebar, (Uint8) 255);
+	video_blit(_sdl_eyebar, NULL, &_eyebar_rect);
+
 }
 
 void scoreboard_update(Uint32 time) {
@@ -125,7 +165,7 @@ void scoreboard_update(Uint32 time) {
 	}
 	if (_mousebar_alpha > 0) {
 		_counter += time;
-		if (_counter > MOUSEBAR_TIMEOUT) {
+		if ((MOUSEBAR_TIMEOUT > 0) && (_counter > MOUSEBAR_TIMEOUT)) {
 			_mousebar_alpha -= time * MOUSEBAR_FADOUT_SPEED;
 			if (_mousebar_alpha < 0) {
 				_mousebar_alpha = 0;

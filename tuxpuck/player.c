@@ -18,6 +18,13 @@ struct _HumanPlayer {
   float speed;
 };
 
+/* eye tracking for nupic */
+float _left_eye_angle;
+float _right_eye_angle;
+float _left_eye_width;
+float _right_eye_width;
+
+
 /* functions */
 static float _mod(float a, float b)
 {
