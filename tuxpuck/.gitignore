@@ -8,3 +8,4 @@ utils/ttf2font
 utils/ttf2font.dSYM/
 data/*.c
 data/libdata.a
+.DS_Store

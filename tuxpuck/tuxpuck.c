@@ -23,6 +23,7 @@ typedef struct {
 	Uint8 sound;
 	Uint8 fullscreen;
 	Uint8 mouse_speed;
+  Uint8 generate;
 } Settings;
 
 /* statics */
@@ -318,7 +319,8 @@ Menu* create_game_menu() {
 	Menu* main_menu = menu_create(3);
 	menu_add_field(main_menu, 0, 1, "Play");
 	menu_add_field(main_menu, 1, 1, "Game Options");
-	menu_add_field(main_menu, 2, 1, "Exit");
+	menu_add_field(main_menu, 2, 1, "Generate Data");
+	menu_add_field(main_menu, 3, 1, "Exit");
 	return main_menu;
 }
 
@@ -400,7 +402,16 @@ int main(int argc, char *argv[]) {
 			}
 
 			break;
-		case 2:
+    case 2: /* Generate data */
+      printf("Generate data\n");
+      _settings->generate = 1;
+			next_opponent = menu_get_selected(opponent_menu);
+			while (next_opponent != -1)
+				next_opponent = _play_match(next_opponent);
+			break;
+		case 1:
+      break;
+		case 3:
 			loop = 0;
 			break;
 		default:
