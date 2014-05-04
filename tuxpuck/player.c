@@ -212,10 +212,9 @@ void human_update(HumanPlayer * human, Uint32 time)
     bzero(buf, 256);
     n = read(_prediction_pipe, buf, 255);
     sscanf(buf,"%f %f %f %f\n", &_left_eye_angle, &_left_eye_width, &_right_eye_angle, &_right_eye_width);
-    printf("%d\n",n);
     printf("PRE %f %f %f %f\n", _left_eye_angle, _left_eye_width, _right_eye_angle, _right_eye_width);
   }
-  if (_settings->generate) {
+  if (_settings->generate || _settings->predictions) {
     if ((_left_eye_angle * _right_eye_angle) > 0) {
       if (_left_eye_angle < 0) {
         dx = 1;
