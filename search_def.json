@@ -33,7 +33,7 @@
   "inferenceType": "MultiStep", 
   "inferenceArgs": {
     "predictionSteps": [
-      10
+      30,40,50
     ], 
     "predictedField": "lpos",
     "predictedField": "rpos"
