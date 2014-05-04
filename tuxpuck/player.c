@@ -5,6 +5,7 @@
 #include <SDL_mouse.h>
 #include "video.h"
 #include "tuxpuck.h"
+#include "toolbox.h"
 
 /* defines */
 #define MIN_MOUSE_SPEED		((float)0.05)
@@ -150,11 +151,17 @@ void calc_eye_angles(HumanPlayer *player) {
 
   _left_eye_angle = atan2(LEFT_EYE_X-puck_x, puck_z-LEFT_EYE_Z);
   _right_eye_angle = atan2(RIGHT_EYE_X-puck_x, puck_z-RIGHT_EYE_Z);
+
 /*  printf("_left_eye_angle: %f\t_right_eye_angle: %f\n", _left_eye_angle, _right_eye_angle);*/
+
+  float left_dist = DIST(LEFT_EYE_X,puck_x, puck_z,LEFT_EYE_Z);
+  _left_eye_width = 0.2f - 0.002f * left_dist;
+  float right_dist = DIST(RIGHT_EYE_X,puck_x, puck_z,RIGHT_EYE_Z);
+  _right_eye_width = 0.2f - 0.002f * right_dist;
   /*
-float _left_eye_width;
-float _right_eye_width;
-*/
+  printf("left_dist: %f\tright_dist: %f\n", left_dist, right_dist);
+  printf("_left_eye_width: %f\t_right_eye_width: %f\n", _left_eye_width, _right_eye_width);
+  */
 }
 
 

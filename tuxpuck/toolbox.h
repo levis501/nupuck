@@ -8,6 +8,10 @@
 #define MIN(a,b) ((a <= b) ? (a) : (b))
 #define LIMIT(lo,x,hi) (MAX(lo,MIN(x,hi)))
 
+#define SQ(x) ((x)*(x))
+#define DIST(x0,x1,z0,z1) (sqrt(SQ(x0-x1) + SQ(z0-z1)))
+
+
 AIPlayer *sam_create(Pad * pad, Puck * puck);
 AIPlayer *tin_create(Pad * pad, Puck * puck);
 AIPlayer *coler_create(Pad * pad, Puck * puck);

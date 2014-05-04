@@ -11,7 +11,7 @@ CSOURCES	= tuxpuck.c video.c audio.c menu.c sprite.c font.c timer.c \
 		  board.c entity.c glass.c scoreboard.c player.c zoom.c png.c \
 		  jpg.c intro.c tux.c arcana.c buff.c a1d2.c smasher.c lex.c \
 		  morth.c sam.c coler.c tin.c 
-INCLUDES	= tuxpuck.h video.h audio.h font.h
+INCLUDES	= tuxpuck.h video.h audio.h font.h toolbox.h
 	   	  
 
 #############################################################
