@@ -27,13 +27,14 @@
         "columns": [
           "*"
         ] 
+      ,"last_record": 5000
       }
     ] 
   }, 
   "inferenceType": "MultiStep", 
   "inferenceArgs": {
     "predictionSteps": [
-      20
+          40,70,100
     ], 
     "predictedField": "rpos"
   }, 
