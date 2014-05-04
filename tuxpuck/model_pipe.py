@@ -178,8 +178,12 @@ def loadModels():
 def process(data):
   global lpos20_model, rpos20_model
   (lpos,lwidth,rpos,rwidth) = [float(field) for field in data.split()]
-  return "0 0 0 0\n"
-#  return "%f %f %f %f\n" % (lpos,lwidth,rpos,rwidth)
+  model_input = {'lpos':lpos,'lwidth':lwidth,'rpos':rpos,'rwidth':rwidth}
+  lresult = lpos20_model.run(model_input)
+  rresult = rpos20_model.run(model_input)
+  lpos_prediction = lresult.inferences['multiStepBestPredictions'][20]
+  rpos_prediction = rresult.inferences['multiStepBestPredictions'][20]
+  return "%f %f %f %f\n" % (lpos_prediction,lwidth,rpos_prediction,rwidth)
 
 if __name__=='__main__':
   loadModels()
