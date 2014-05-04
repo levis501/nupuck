@@ -33,10 +33,9 @@
   "inferenceType": "MultiStep", 
   "inferenceArgs": {
     "predictionSteps": [
-      30,40,50
+      20
     ], 
-    "predictedField": "lpos",
-    "predictedField": "rpos"
+    "predictedField": "lpos"
   }, 
   "iterationCount": -1, 
   "swarmSize": "medium"
