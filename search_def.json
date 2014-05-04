@@ -35,7 +35,7 @@
     "predictionSteps": [
       20
     ], 
-    "predictedField": "lpos"
+    "predictedField": "rpos"
   }, 
   "iterationCount": -1, 
   "swarmSize": "medium"
