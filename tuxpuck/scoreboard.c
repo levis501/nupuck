@@ -14,7 +14,7 @@
 #define LINE_HEIGHT		((Uint32)22)
 #define MOUSEBAR_TIMEOUT	((Uint32)2000)
 #define MOUSEBAR_FADOUT_SPEED	((float)0.001)
-#define EYEBAR_LEFT SCOREBOARD_POSITION+15
+#define EYEBAR_LEFT SCOREBOARD_POSITION+8
 #define EYEBAR_WIDTH ((Uint16)120)
 #define EYEBAR_RIGHT (EYEBAR_LEFT + EYEBAR_WIDTH)
 #define EYEBAR_CENTER (EYEBAR_LEFT + (EYEBAR_WIDTH / 2))
@@ -147,7 +147,6 @@ void scoreboard_reblit(void) {
   _eyebar_rect.y = 125;
 	video_set_alpha(_sdl_eyebar, (Uint8) 255);
 	video_blit(_sdl_eyebar, NULL, &_eyebar_rect);
-
 }
 
 void scoreboard_update(Uint32 time) {

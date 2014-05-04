@@ -58,6 +58,14 @@ typedef struct _Strategy Strategy;
 typedef struct _Sprite Sprite;
 typedef struct _Timer Timer;
 
+/* structs */
+typedef struct {
+  Uint8 sound;
+  Uint8 fullscreen;
+  Uint8 mouse_speed;
+  Uint8 generate;
+} Settings;
+
 struct _Strategy {
 	void (*idle)(AIPlayer *, Uint32);
 	void (*serve)(AIPlayer *, Uint32);

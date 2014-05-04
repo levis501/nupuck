@@ -2,15 +2,18 @@
 
 #include "video.h"
 #include "tuxpuck.h"
+#include "toolbox.h"
 
 /* externals */
 extern unsigned char board_jpg[];
+extern HumanPlayer *p1;
 
 /* statics */
 
 /*SDLL Surface representing the board.*/
 static SDL_Surface *_sdl_board;
-static Uint8 _state = 0, _turn = 0;
+Uint8 _state = 0;
+Uint8 _turn = 0;
 static float _coeff[4];
 static Pad *_pad_1, *_pad_2;
 static Puck *_puck;
@@ -100,6 +103,7 @@ Uint8 board_update(Uint32 time) {
 		break;
 	case BOARD_STATE_NEW_PUCK:
 		if (_turn == 1) {
+      p1->serveState = HUMAN_SERVE_START;
 			if (entity_move_towards((Entity *) _puck, 0, -21, 0.05, time) == 0) {
 				_state = BOARD_STATE_PLAY;
 				entity_set_velocity((Entity *) _puck, 0, 0);

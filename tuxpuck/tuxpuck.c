@@ -18,17 +18,9 @@
 #define SETTINGSFILE _settings_file
 #endif
 
-/* structs */
-typedef struct {
-	Uint8 sound;
-	Uint8 fullscreen;
-	Uint8 mouse_speed;
-  Uint8 generate;
-} Settings;
+Settings *_settings = NULL;
 
 /* statics */
-static Settings *_settings = NULL;
-
 #ifndef windows
 static char _settings_file[200];
 #endif
@@ -77,6 +69,8 @@ AIPlayer* select_opponent(Uint8 opponent) {
 	return p2;
 }
 
+HumanPlayer *p1 = NULL;
+
 /* functions */
 static int _play_match(Uint8 opponent) {
 	int next_opponent;
@@ -86,7 +80,7 @@ static int _play_match(Uint8 opponent) {
 	char buffer[50];
 
 	/* Human player.*/
-	HumanPlayer *p1 = NULL;
+	p1 = NULL;
 
 	/* Computer opponent. */
 	AIPlayer *p2 = NULL;

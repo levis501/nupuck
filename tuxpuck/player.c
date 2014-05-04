@@ -12,19 +12,28 @@
 #define MAX_MOUSE_SPEED		((float)0.50)
 
 #define EYE_PUCK_WIDTH ((Uint16) 1)
+/*
 #define LEFT_EYE_X ((float)-10)
 #define LEFT_EYE_Z ((float)-52)
 #define RIGHT_EYE_X ((float)10)
 #define RIGHT_EYE_Z ((float)-52)
+*/
+#define EYE_SPACING (5.0f)
 
+extern Settings *_settings;
+extern Uint8 _state;
+extern Uint8 _turn;
 
 /* structs */
+/* moved to toolbox.h
 struct _HumanPlayer {
   Uint8 points;
   char *name;
   Pad *pad;
   float speed;
+  int serveState;
 };
+*/
 
 /* eye tracking for nupic */
 float _left_eye_angle;
@@ -120,6 +129,7 @@ HumanPlayer *human_create(Pad * pad, char *name)
   human->pad = pad;
   human->points = 0;
   human->speed = (MAX_MOUSE_SPEED + MIN_MOUSE_SPEED) / 2.0;
+  human->serveState = HUMAN_SERVE_NONE;
   return human;
 }
 
@@ -149,14 +159,21 @@ void calc_eye_angles(HumanPlayer *player) {
   float puck_z;
   entity_get_position((Entity *)board_get_puck(), &puck_x, &puck_z);
 
-  _left_eye_angle = atan2(LEFT_EYE_X-puck_x, puck_z-LEFT_EYE_Z);
-  _right_eye_angle = atan2(RIGHT_EYE_X-puck_x, puck_z-RIGHT_EYE_Z);
+  float human_x;
+  float human_z;
+  entity_get_position((Entity *)player->pad, &human_x, &human_z);
+
+  float left_eye_x = human_x - EYE_SPACING;
+  float right_eye_x = human_x + EYE_SPACING;
+
+  _left_eye_angle = atan2(left_eye_x-puck_x, puck_z-human_z);
+  _right_eye_angle = atan2(right_eye_x-puck_x, puck_z-human_z);
 
 /*  printf("_left_eye_angle: %f\t_right_eye_angle: %f\n", _left_eye_angle, _right_eye_angle);*/
 
-  float left_dist = DIST(LEFT_EYE_X,puck_x, puck_z,LEFT_EYE_Z);
+  float left_dist = DIST(left_eye_x,puck_x, puck_z,human_z);
   _left_eye_width = 0.2f - 0.002f * left_dist;
-  float right_dist = DIST(RIGHT_EYE_X,puck_x, puck_z,RIGHT_EYE_Z);
+  float right_dist = DIST(right_eye_x,puck_x, puck_z,human_z);
   _right_eye_width = 0.2f - 0.002f * right_dist;
   /*
   printf("left_dist: %f\tright_dist: %f\n", left_dist, right_dist);
@@ -165,12 +182,56 @@ void calc_eye_angles(HumanPlayer *player) {
 }
 
 
+#define SERVE_SPEED 3
 void human_update(HumanPlayer * human, Uint32 time)
 {
-  int dx, dy;
+  int dx=0, dy=0;
 
   calc_eye_angles(human);
-  SDL_GetRelativeMouseState(&dx, &dy);
+  printf("EYE %f %f %f %f\n", _left_eye_angle, _left_eye_width, _right_eye_angle, _right_eye_width);
+  if (_settings->generate) {
+    if ((_left_eye_angle * _right_eye_angle) > 0) {
+      if (_left_eye_angle < 0) {
+        dx = 1;
+      } else {
+        dx = -1;
+      }
+    }
+    float x=0,z,dz;
+
+    entity_get_velocity((Entity *)board_get_puck(),0, &dz);
+    /*printf("puck dz = %f\n", dz);*/
+    entity_get_position((Entity *)human->pad, &x, &z);
+    /*printf("human x,z = %f,%f\n", x,z);*/
+    switch (human->serveState) {
+      case HUMAN_SERVE_START:
+        x=0;
+        entity_set_position((Entity *)human->pad,x,z);
+        if (dz > 0.001) {
+          dy = SERVE_SPEED;
+          human->serveState = HUMAN_SERVE_END;
+        } else {
+          dy = -SERVE_SPEED;
+        }
+        break ;
+      case HUMAN_SERVE_END:
+        if (z < (-35+SERVE_SPEED)) {
+          dy = 0;
+          human->serveState = HUMAN_SERVE_NONE;
+          z = -36;
+          entity_set_position((Entity *)human->pad,x,z);
+        } else {
+          dy = 5;
+        }
+        break;
+      case HUMAN_SERVE_NONE:
+      default:
+        dy = 0;
+    }
+  } else {
+    SDL_GetRelativeMouseState(&dx, &dy);
+  }
+  /*printf("dx:%d dy:%d\n",dx,dy);*/
   if (time != 0)
     entity_set_velocity(human->pad, (float) dx / time * human->speed,
 			(float) -dy / time * human->speed);
@@ -200,6 +261,7 @@ void aiplayer_update(AIPlayer * player, Uint32 time)
     player->strategy.idle(player, time);
     break;
   case PLAYER_STATE_SERVE:
+    printf("PLAYER_STATE_SERVE\n");
     player->strategy.serve(player, time);
     break;
   case PLAYER_STATE_BACKUP:

@@ -11,6 +11,18 @@
 #define SQ(x) ((x)*(x))
 #define DIST(x0,x1,z0,z1) (sqrt(SQ(x0-x1) + SQ(z0-z1)))
 
+#define HUMAN_SERVE_NONE 0
+#define HUMAN_SERVE_START 1
+#define HUMAN_SERVE_END 2
+
+struct _HumanPlayer {
+  Uint8 points;
+  char *name;
+  Pad *pad;
+  float speed;
+  int serveState;
+};
+
 
 AIPlayer *sam_create(Pad * pad, Puck * puck);
 AIPlayer *tin_create(Pad * pad, Puck * puck);
