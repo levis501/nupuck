@@ -10,6 +10,13 @@
 #define MIN_MOUSE_SPEED		((float)0.05)
 #define MAX_MOUSE_SPEED		((float)0.50)
 
+#define EYE_PUCK_WIDTH ((Uint16) 1)
+#define LEFT_EYE_X ((float)-10)
+#define LEFT_EYE_Z ((float)-52)
+#define RIGHT_EYE_X ((float)10)
+#define RIGHT_EYE_Z ((float)-52)
+
+
 /* structs */
 struct _HumanPlayer {
   Uint8 points;
@@ -136,10 +143,26 @@ void human_set_speed(HumanPlayer * human, Uint8 speed)
     MIN_MOUSE_SPEED + (MAX_MOUSE_SPEED - MIN_MOUSE_SPEED) * speed / 10.0;
 }
 
+void calc_eye_angles(HumanPlayer *player) {
+  float puck_x;
+  float puck_z;
+  entity_get_position((Entity *)board_get_puck(), &puck_x, &puck_z);
+
+  _left_eye_angle = atan2(LEFT_EYE_X-puck_x, puck_z-LEFT_EYE_Z);
+  _right_eye_angle = atan2(RIGHT_EYE_X-puck_x, puck_z-RIGHT_EYE_Z);
+/*  printf("_left_eye_angle: %f\t_right_eye_angle: %f\n", _left_eye_angle, _right_eye_angle);*/
+  /*
+float _left_eye_width;
+float _right_eye_width;
+*/
+}
+
+
 void human_update(HumanPlayer * human, Uint32 time)
 {
   int dx, dy;
 
+  calc_eye_angles(human);
   SDL_GetRelativeMouseState(&dx, &dy);
   if (time != 0)
     entity_set_velocity(human->pad, (float) dx / time * human->speed,

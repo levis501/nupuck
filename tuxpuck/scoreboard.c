@@ -1,9 +1,9 @@
 /* scoreboard.c - Copyright (C) 2001-2002 Jacob Kroon, see COPYING for details */
 
-#include "math.h"
-
 #include "video.h"
 #include "tuxpuck.h"
+
+#include "toolbox.h"
 
 /* defines */
 #define SCOREBOARD_POSITION	((Uint16)460)
@@ -14,8 +14,9 @@
 #define LINE_HEIGHT		((Uint32)22)
 #define MOUSEBAR_TIMEOUT	((Uint32)2000)
 #define MOUSEBAR_FADOUT_SPEED	((float)0.001)
-#define EYEBAR_LEFT SCOREBOARD_POSITION+10
-#define EYEBAR_WIDTH ((Uint16)130)
+#define EYEBAR_LEFT SCOREBOARD_POSITION+15
+#define EYEBAR_WIDTH ((Uint16)120)
+#define EYEBAR_RIGHT (EYEBAR_LEFT + EYEBAR_WIDTH)
 #define EYEBAR_CENTER (EYEBAR_LEFT + (EYEBAR_WIDTH / 2))
 #define EYEBAR_TOP ((Uint16)125)
 #define EYE_ANGLE_MAX ((float) 0.5)
@@ -124,18 +125,21 @@ void scoreboard_reblit(void) {
   rect.y = EYEBAR_TOP;
   rect.h = 25;
 
-  _left_eye_angle=-0.4;
+/*  _left_eye_angle=-0.4;*/
   _left_eye_width=0.1;
 
   rect.x = EYEBAR_CENTER - EYEBAR_SCALE * (_left_eye_angle + _left_eye_width/2);
+  rect.x = LIMIT(EYEBAR_LEFT, rect.x, EYEBAR_RIGHT);
   rect.w =  EYEBAR_SCALE * _left_eye_width;
-  printf("left eye x: %d, w:%d\n", rect.x,rect.w);
+
+  /*printf("left eye %d<=x: %d<=%d, w:%d\n", EYEBAR_LEFT,rect.x,EYEBAR_RIGHT, rect.w);*/
 	video_fill(video_map_rgb(255, 0, 255), (Uint8) 255, &rect);
 
-  _right_eye_angle=0.4;
+/*  _right_eye_angle=0.4; */
   _right_eye_width=0.1;
 
   rect.x = EYEBAR_CENTER - EYEBAR_SCALE * (_right_eye_angle + _right_eye_width/2);
+  rect.x = LIMIT(EYEBAR_LEFT, rect.x, EYEBAR_RIGHT);
   rect.w = EYEBAR_SCALE * _right_eye_width;
 	video_fill(video_map_rgb(255, 255, 0), (Uint8) 255, &rect);
 
