@@ -64,6 +64,7 @@ typedef struct {
   Uint8 fullscreen;
   Uint8 mouse_speed;
   Uint8 generate;
+  Uint8 predictions;
 } Settings;
 
 struct _Strategy {

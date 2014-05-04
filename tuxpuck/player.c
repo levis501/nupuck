@@ -3,6 +3,15 @@
 #include <stdlib.h>
 #include <math.h>
 #include <SDL_mouse.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <sys/uio.h>
+#include <unistd.h>
+
+
 #include "video.h"
 #include "tuxpuck.h"
 #include "toolbox.h"
@@ -21,6 +30,7 @@
 #define EYE_SPACING (5.0f)
 
 extern Settings *_settings;
+extern int _prediction_pipe;
 extern Uint8 _state;
 extern Uint8 _turn;
 
@@ -186,9 +196,25 @@ void calc_eye_angles(HumanPlayer *player) {
 void human_update(HumanPlayer * human, Uint32 time)
 {
   int dx=0, dy=0;
+  int n;
+  char buf[256];
 
   calc_eye_angles(human);
   printf("EYE %f %f %f %f\n", _left_eye_angle, _left_eye_width, _right_eye_angle, _right_eye_width);
+  if (_settings->predictions) {
+    sprintf(buf,"%f %f %f %f\n", _left_eye_angle, _left_eye_width, _right_eye_angle, _right_eye_width);
+    n = write(_prediction_pipe, buf, strlen(buf));
+    if (n < 0) {
+      printf("ERROR writing to socket %s\n",buf);
+      perror("perror ");
+      exit(4);
+    }
+    bzero(buf, 256);
+    n = read(_prediction_pipe, buf, 255);
+    sscanf(buf,"%f %f %f %f\n", &_left_eye_angle, &_left_eye_width, &_right_eye_angle, &_right_eye_width);
+    printf("%d\n",n);
+    printf("PRE %f %f %f %f\n", _left_eye_angle, _left_eye_width, _right_eye_angle, _right_eye_width);
+  }
   if (_settings->generate) {
     if ((_left_eye_angle * _right_eye_angle) > 0) {
       if (_left_eye_angle < 0) {

@@ -4,6 +4,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <sys/uio.h>
+#include <unistd.h>
+
+
 #include <SDL.h>
 #include "video.h"
 #include "audio.h"
@@ -19,6 +25,30 @@
 #endif
 
 Settings *_settings = NULL;
+int _prediction_pipe = 0;
+
+void startPipe() {
+  struct sockaddr_un name;
+  int sock;
+  size_t size;
+
+  sock = socket(PF_LOCAL, SOCK_STREAM, 0);
+  if (sock < 0) {
+    printf("ERROR creating socket\n");
+    exit(2);
+  }
+  name.sun_family = AF_LOCAL;
+  strncpy(name.sun_path, "/tmp/nupuck.socket", sizeof(name.sun_path));
+  name.sun_path[sizeof(name.sun_path)-1]='\0';
+  size = (offsetof (struct sockaddr_un, sun_path) + strlen (name.sun_path));
+  if (connect (sock, (struct sockaddr *) &name, size) < 0) {
+    printf("ERROR connecting to socket %s\n",name.sun_path);
+    perror("perror: ");
+    exit(3);
+  }
+
+  _prediction_pipe = sock;
+}
 
 /* statics */
 #ifndef windows
@@ -310,11 +340,12 @@ static void _tuxpuck_deinit(void) {
 }
 
 Menu* create_game_menu() {
-	Menu* main_menu = menu_create(3);
+	Menu* main_menu = menu_create(5);
 	menu_add_field(main_menu, 0, 1, "Play");
 	menu_add_field(main_menu, 1, 1, "Game Options");
 	menu_add_field(main_menu, 2, 1, "Generate Data");
-	menu_add_field(main_menu, 3, 1, "Exit");
+	menu_add_field(main_menu, 3, 1, "Predictive Play");
+	menu_add_field(main_menu, 4, 1, "Exit");
 	return main_menu;
 }
 
@@ -403,7 +434,21 @@ int main(int argc, char *argv[]) {
 			while (next_opponent != -1)
 				next_opponent = _play_match(next_opponent);
 			break;
-		case 3:
+    case 3: /* Play with predictions */
+      printf("Play with predictions\n");
+      _settings->predictions = 1;
+      if (_prediction_pipe == 0) {
+        startPipe();
+      }
+      if (_prediction_pipe == 0) {
+        printf("ERROR opening pipe\n");
+        exit(1);
+      }
+			next_opponent = menu_get_selected(opponent_menu);
+			while (next_opponent != -1)
+				next_opponent = _play_match(next_opponent);
+			break;
+		case 4:
 			loop = 0;
 			break;
 		default:
