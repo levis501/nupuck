@@ -26,8 +26,7 @@
         "source": "file://eye.csv", 
         "columns": [
           "*"
-        ], 
-        "last_record": 100
+        ] 
       }
     ] 
   }, 
@@ -40,6 +39,6 @@
     "predictedField": "rpos"
   }, 
   "iterationCount": -1, 
-  "swarmSize": "small"
+  "swarmSize": "medium"
 }
 
