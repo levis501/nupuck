@@ -193,6 +193,7 @@ void calc_eye_angles(HumanPlayer *player) {
 
 
 #define SERVE_SPEED 3
+#define HUMAN_SPEED 3
 void human_update(HumanPlayer * human, Uint32 time)
 {
   int dx=0, dy=0;
@@ -211,10 +212,32 @@ void human_update(HumanPlayer * human, Uint32 time)
     }
     bzero(buf, 256);
     n = read(_prediction_pipe, buf, 255);
-    sscanf(buf,"%f %f %f %f\n", &_left_eye_angle, &_left_eye_width, &_right_eye_angle, &_right_eye_width);
+    float left_predict, right_predict;
+    sscanf(buf,"%f %f %f %f\n", &left_predict, &_left_eye_width, &right_predict, &_right_eye_width);
+    if (fabs(left_predict) > fabs(_left_eye_angle)) {
+      _left_eye_angle = left_predict;
+    }
+    if (fabs(right_predict) > fabs(_right_eye_angle)) {
+      _right_eye_angle = right_predict;
+    }
     printf("PRE %f %f %f %f\n", _left_eye_angle, _left_eye_width, _right_eye_angle, _right_eye_width);
   }
   if (_settings->generate || _settings->predictions) {
+    if (fabs(_left_eye_angle) > fabs(_right_eye_angle)) {
+      if (_left_eye_angle < 0) {
+        dx = HUMAN_SPEED;
+      } else {
+        dx = -HUMAN_SPEED;
+      }
+    } else {
+      if (_right_eye_angle < 0) {
+        dx = HUMAN_SPEED;
+      } else {
+        dx = -HUMAN_SPEED;
+      }
+    }
+
+    /*
     if ((_left_eye_angle * _right_eye_angle) > 0) {
       if (_left_eye_angle < 0) {
         dx = 1;
@@ -222,6 +245,7 @@ void human_update(HumanPlayer * human, Uint32 time)
         dx = -1;
       }
     }
+    */
     float x=0,z,dz;
 
     entity_get_velocity((Entity *)board_get_puck(),0, &dz);
